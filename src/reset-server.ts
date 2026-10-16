@@ -1,4 +1,3 @@
-import {INestApplication} from '@nestjs/common';
 import {
     bootstrap,
     ChannelService,
@@ -22,7 +21,9 @@ import fs from 'fs-extra';
 import path from 'path';
 
 const CACHE_DIR = '../data-cache';
-let app: INestApplication;
+// The app type comes from @vendure/core, so it matches the Nest copy that Vendure Cloud supplies.
+type VendureApp = Awaited<ReturnType<typeof bootstrap>>;
+let app: VendureApp;
 
 // Allow graceful restarts by pm2. See http://pm2.keymetrics.io/docs/usage/signals-clean-restart/#graceful-stop
 process.on('SIGINT', async () => {
@@ -152,7 +153,7 @@ function cacheExists() {
 /**
  * Creates a test customer
  */
-async function createTestCustomer(app: INestApplication) {
+async function createTestCustomer(app: VendureApp) {
     const customerService = app.get(CustomerService);
     const requestContextService = app.get(RequestContextService);
     const orderService = app.get(OrderService);
@@ -210,7 +211,7 @@ async function createTestCustomer(app: INestApplication) {
 /**
  * Creates demo administrators with custom roles
  */
-async function createDemoAdministrators(app: INestApplication) {
+async function createDemoAdministrators(app: VendureApp) {
     if (isPublicMode()) {
         return;
     }
@@ -240,7 +241,7 @@ async function createDemoAdministrators(app: INestApplication) {
 /**
  * Adds EUR currency and German language to the default channel
  */
-async function configureDefaultChannel(app: INestApplication) {
+async function configureDefaultChannel(app: VendureApp) {
     if (isPublicMode()) {
         return;
     }
@@ -267,7 +268,7 @@ async function configureDefaultChannel(app: INestApplication) {
 /**
  * Seeds EUR prices for all product variants based on their existing USD price
  */
-async function seedEuroPrices(app: INestApplication) {
+async function seedEuroPrices(app: VendureApp) {
     if (isPublicMode()) {
         return;
     }
